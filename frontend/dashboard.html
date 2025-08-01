@@ -113,7 +113,7 @@
     // Load backend data for referral & donations
     async function hydrateStats() {
       try {
-        const res = await fetch("http://localhost:5000/user");
+        const res = await fetch("https://fund-raiser-nldl.onrender.com/user");
         const user = await res.json();
         document.getElementById("referral-code").textContent = user.referralCode;
         document.getElementById("total-donations").textContent = user.totalDonations;
