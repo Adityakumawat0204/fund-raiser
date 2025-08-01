@@ -1,32 +1,30 @@
-// backend/server.js
-import express from "express";
-import cors from "cors";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+// backend/index.js
+const express = require("express");
+const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
 
 const app = express();
+const PORT = process.env.PORT || 5000;
+
+const data = JSON.parse(fs.readFileSync(path.join(__dirname, "data.json"), "utf-8"));
+
 app.use(cors());
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const PORT = process.env.PORT || 5000;
-const data = JSON.parse(fs.readFileSync(path.join(__dirname, "data.json")));
-
-// Serve frontend
+// Serve frontend statically (optional, if needed)
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-// API routes
+// API route to get user info
 app.get("/user", (req, res) => {
   res.json(data.user);
 });
 
+// API route to get leaderboard info
 app.get("/leaderboard", (req, res) => {
   res.json(data.leaderboard);
 });
 
-// Default route (login page)
+// Default route
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
