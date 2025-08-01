@@ -1,0 +1,29 @@
+{
+  "user": {
+    "name": "Aditya Kumawat",
+    "referralCode": "aditya2025",
+    "totalDonations": 5000
+  },
+  "leaderboard": [
+    { "name": "Aditya Kumawat", "donations": 5000 },
+    { "name": "Ravi Sharma", "donations": 4200 },
+    { "name": "Priya Singh", "donations": 3900 },
+    { "name": "Megha Verma", "donations": 3750 },
+    { "name": "Ankit Raj", "donations": 3620 },
+    { "name": "Neha Jain", "donations": 3480 },
+    { "name": "Tushar Yadav", "donations": 3300 },
+    { "name": "Simran Kaur", "donations": 3100 },
+    { "name": "Mohit Chauhan", "donations": 2950 },
+    { "name": "Divya Patel", "donations": 2800 },
+    { "name": "Saurabh Gupta", "donations": 2600 },
+    { "name": "Shreya Nair", "donations": 2500 },
+    { "name": "Kunal Joshi", "donations": 2400 },
+    { "name": "Aditi Mishra", "donations": 2300 },
+    { "name": "Vikram Singh", "donations": 2100 },
+    { "name": "Isha Mehta", "donations": 2000 },
+    { "name": "Yash Rawat", "donations": 1850 },
+    { "name": "Sneha Kulkarni", "donations": 1700 },
+    { "name": "Aryan Tiwari", "donations": 1600 },
+    { "name": "Ritika Sharma", "donations": 1500 }
+  ]
+}

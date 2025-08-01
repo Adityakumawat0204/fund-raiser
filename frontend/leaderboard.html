@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Leaderboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans transition-colors duration-300">
+  <header class="flex justify-between items-center p-4 bg-white shadow sticky top-0 z-10">
+    <div class="flex items-center gap-4">
+      <a href="dashboard.html" class="text-blue-600 font-semibold hover:underline">← Back</a>
+      <h1 class="text-xl font-bold">Leaderboard</h1>
+    </div>
+    <div class="flex items-center gap-3">
+      <input id="searchInput" type="text" placeholder="Search name..." class="border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      <button id="logoutBtn" class="text-sm bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Logout</button>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto p-6 space-y-6">
+    <!-- Summary -->
+    <div class="flex justify-between items-center">
+      <div class="text-lg font-semibold">Top Fundraisers</div>
+      <div class="text-sm text-gray-600">Sorted by donations</div>
+    </div>
+
+<!-- Leaderboard list 
+    <div class="bg-white rounded-2xl shadow overflow-hidden">
+      <ul id="leaderboard-list" class="divide-y">
+        <!-- Skeleton before load -->
+        <li class="p-4 animate-pulse flex justify-between">
+          <div class="w-1/2 h-4 bg-gray-300 rounded"></div>
+          <div class="w-1/6 h-4 bg-gray-300 rounded"></div>
+        </li>
+        <li class="p-4 animate-pulse flex justify-between">
+          <div class="w-1/2 h-4 bg-gray-300 rounded"></div>
+          <div class="w-1/6 h-4 bg-gray-300 rounded"></div>
+        </li>
+        <li class="p-4 animate-pulse flex justify-between">
+          <div class="w-1/2 h-4 bg-gray-300 rounded"></div>
+          <div class="w-1/6 h-4 bg-gray-300 rounded"></div>
+        </li>
+      </ul>
+    </div>
+  </main>
+
+  <!-- Scroll to top -->
+  <button id="scrollTopBtn"
+    class="hidden fixed bottom-6 right-6 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700 transition duration-300 z-50">
+    ↑ Top
+  </button>
+
+  <script src="script.js"></script>
+  <script>
+    // Redirect back if no user
+    if (!localStorage.getItem("loggedInUser")) {
+      window.location.href = "index.html";
+    }
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "index.html";
+    });
+
+    const listEl = document.getElementById("leaderboard-list");
+    const searchInput = document.getElementById("searchInput");
+
+    async function fetchLeaderboard() {
+      try {
+        const res = await fetch("http://localhost:5000/leaderboard");
+        let data = await res.json();
+        data.sort((a, b) => b.donations - a.donations);
+
+        renderList(data);
+      } catch (err) {
+        console.error("Failed to load leaderboard", err);
+        listEl.innerHTML = '<li class="p-4 text-red-600">Failed to load leaderboard.</li>';
+      }
+    }
+
+    function renderList(data) {
+      const filtered = data.filter(item =>
+        item.name.toLowerCase().includes(searchInput.value.trim().toLowerCase())
+      );
+
+      listEl.innerHTML = filtered.map((item, index) => {
+        // medal for top 3
+        let badge = `#${index + 1}`;
+        if (index === 0) badge = "🥇";
+        else if (index === 1) badge = "🥈";
+        else if (index === 2) badge = "🥉";
+
+        return `
+          <li class="p-4 flex justify-between items-center hover:bg-gray-50 transition">
+            <div class="flex items-center gap-3">
+              <div class="text-lg font-bold">${badge}</div>
+              <div>
+                <div class="font-semibold">${item.name}</div>
+                <div class="text-xs text-gray-500">₹${item.donations.toLocaleString()}</div>
+              </div>
+            </div>
+            <div class="font-medium text-green-600">₹${item.donations.toLocaleString()}</div>
+          </li>
+        `;
+      }).join("");
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `<li class="p-4 text-center text-gray-500">No matching names.</li>`;
+      }
+    }
+
+    searchInput.addEventListener("input", () => {
+      fetchLeaderboard().then(() => {}); // simplest: refetch & filter
+    });
+
+    fetchLeaderboard();
+
+    const scrollTopBtn = document.getElementById("scrollTopBtn");
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 200) scrollTopBtn.classList.remove("hidden");
+      else scrollTopBtn.classList.add("hidden");
+    });
+    scrollTopBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  </script>
+</body>
+</html>

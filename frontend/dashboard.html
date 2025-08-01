@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Intern Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans transition-colors duration-300">
+  <header class="flex justify-between items-center p-4 bg-white shadow-md sticky top-0 z-10">
+    <div class="flex items-center gap-4">
+      <span class="text-2xl font-bold text-blue-600">Fundraising Dashboard</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <button id="themeToggle" class="text-sm px-3 py-1 border rounded-md hover:bg-gray-100">Dark Mode</button>
+      <a href="leaderboard.html" class="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Leaderboard</a>
+      <button id="logoutBtn" class="text-sm bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300">Logout</button>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto p-6 space-y-8">
+    <!-- Profile + Stats card -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row gap-6">
+      <div class="flex-1 flex flex-col gap-4">
+        <div class="flex justify-between items-start">
+          <div>
+            <h1 class="text-2xl font-bold" id="welcome-name">Loading...</h1>
+            <p class="text-sm text-gray-500">Intern</p>
+          </div>
+          <div class="flex gap-2">
+            <div class="text-xs px-3 py-1 bg-green-100 text-green-800 rounded-full">Top Fundraiser</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+          <div>
+            <p class="text-xs font-semibold mb-1">Referral Code</p>
+            <div class="flex items-center gap-2 bg-gray-100 rounded px-3 py-2">
+              <span id="referral-code" class="font-mono font-semibold">Loading...</span>
+              <button id="copyReferral" class="text-sm px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Copy</button>
+            </div>
+          </div>
+          <div>
+            <p class="text-xs font-semibold mb-1">Total Donations Raised</p>
+            <div class="flex items-center gap-2">
+              <div class="text-2xl font-bold">₹<span id="total-donations">0</span></div>
+              <div class="text-sm text-gray-500">so far</div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <p class="text-xs font-semibold mb-1">Progress toward ₹5000 goal</p>
+          <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+            <div id="progress-bar" class="h-full bg-gradient-to-r from-green-400 to-blue-500" style="width:0%"></div>
+          </div>
+          <p class="text-xs text-gray-600 mt-1" id="progress-text">0% complete</p>
+        </div>
+      </div>
+      <!-- Rewards section -->
+      <div class="flex-1">
+        <h2 class="text-lg font-semibold mb-3">Rewards / Unlockables</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-4 border rounded-lg flex items-center gap-3 hover:shadow-md transition">
+            <div class="text-2xl">🎖️</div>
+            <div>
+              <div class="font-semibold">Bronze Badge</div>
+              <div class="text-xs text-gray-600">₹100+ donations</div>
+            </div>
+          </div>
+          <div class="p-4 border rounded-lg flex items-center gap-3 hover:shadow-md transition">
+            <div class="text-2xl">🥈</div>
+            <div>
+              <div class="font-semibold">Silver Badge</div>
+              <div class="text-xs text-gray-600">₹500+ donations</div>
+            </div>
+          </div>
+          <div class="p-4 border rounded-lg flex items-center gap-3 hover:shadow-md transition">
+            <div class="text-2xl">🥇</div>
+            <div>
+              <div class="font-semibold">Gold Badge</div>
+              <div class="text-xs text-gray-600">₹1000+ donations</div>
+            </div>
+          </div>
+          <div class="p-4 border rounded-lg flex items-center gap-3 hover:shadow-md transition">
+            <div class="text-2xl">🏆</div>
+            <div>
+              <div class="font-semibold">Certificate</div>
+              <div class="text-xs text-gray-600">₹2000+ donations</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Call to action -->
+    <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
+      <div class="text-sm text-gray-600">
+        Share your referral to increase donations and unlock more rewards.
+      </div>
+      <a href="leaderboard.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium">See Leaderboard</a>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    // Redirect if not logged in
+    const userName = localStorage.getItem("loggedInUser");
+    if (!userName) {
+      window.location.href = "index.html";
+    } else {
+      document.getElementById("welcome-name").textContent = userName;
+    }
+
+    // Load backend data for referral & donations
+    async function hydrateStats() {
+      try {
+        const res = await fetch("http://localhost:5000/user");
+        const user = await res.json();
+        document.getElementById("referral-code").textContent = user.referralCode;
+        document.getElementById("total-donations").textContent = user.totalDonations;
+
+        // progress toward a goal of 5000
+        const goal = 5000;
+        const percent = Math.min(100, Math.round((user.totalDonations / goal) * 100));
+        document.getElementById("progress-bar").style.width = percent + "%";
+        document.getElementById("progress-text").textContent = `${percent}% complete`;
+      } catch (e) {
+        console.error("Failed to load user", e);
+      }
+    }
+
+    hydrateStats();
+
+    // Copy referral
+    document.getElementById("copyReferral").addEventListener("click", () => {
+      const code = document.getElementById("referral-code").textContent;
+      navigator.clipboard.writeText(code);
+      alert("Referral code copied!");
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "index.html";
+    });
+
+    // Dark/light toggle
+    const themeToggle = document.getElementById("themeToggle");
+    const root = document.documentElement;
+    function isDark() {
+      return root.getAttribute("data-theme") === "dark";
+    }
+    themeToggle.addEventListener("click", () => {
+      if (isDark()) {
+        root.setAttribute("data-theme", "light");
+        document.body.classList.remove("bg-gray-900");
+        document.body.classList.add("bg-gray-50");
+        themeToggle.textContent = "Dark Mode";
+      } else {
+        root.setAttribute("data-theme", "dark");
+        document.body.classList.add("bg-gray-900");
+        document.body.classList.remove("bg-gray-50");
+        themeToggle.textContent = "Light Mode";
+      }
+    });
+  </script>
+</body>
+</html>
