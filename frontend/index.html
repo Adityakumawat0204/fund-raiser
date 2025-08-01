@@ -3,25 +3,76 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login</title>
+  <title>Intern Portal Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
-  <div class="bg-white p-8 rounded shadow-md w-80">
-    <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
-    <input type="text" id="username" placeholder="Enter your name" class="w-full px-4 py-2 border rounded mb-4" />
-    <button id="loginBtn" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Login</button>
+<body class="bg-gradient-to-b from-blue-50 to-white min-h-screen flex items-center justify-center px-4">
+  <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
+    <h2 class="text-3xl font-bold text-center text-blue-600 mb-2">Welcome Back</h2>
+    <p class="text-center text-sm text-gray-600 mb-6">Enter your name to continue</p>
+
+    <form id="loginForm" class="space-y-5">
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+        <input
+          id="name"
+          type="text"
+          placeholder="Aditya Kumawat"
+          required
+          class="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div class="flex gap-4">
+        <div class="flex-1">
+          <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+            required
+            class="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div class="flex-1">
+          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            required
+            class="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition duration-300"
+      >
+        Login
+      </button>
+    </form>
+
+    <p class="text-center text-gray-500 text-xs mt-5">
+      This is a dummy login; authentication is stored only in localStorage.
+    </p>
   </div>
 
   <script>
-    document.getElementById("loginBtn").addEventListener("click", () => {
-      const name = document.getElementById("username").value.trim();
-      if (name) {
-        localStorage.setItem("loggedInUser", name);
-        window.location.href = "dashboard.html";
-      } else {
-        alert("Please enter your name");
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!name || !email || !password) {
+        return alert("Please fill all the fields.");
       }
+
+      localStorage.setItem("loggedInUser", name);
+      alert(`Welcome, ${name}! Redirecting to your dashboard...`);
+      window.location.href = "dashboard.html";
     });
   </script>
 </body>
