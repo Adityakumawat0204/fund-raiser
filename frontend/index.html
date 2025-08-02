@@ -6,73 +6,61 @@
   <title>Intern Portal Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-b from-blue-50 to-white min-h-screen flex items-center justify-center px-4">
-  <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md">
-    <h2 class="text-3xl font-bold text-center text-blue-600 mb-2">Welcome Back</h2>
-    <p class="text-center text-sm text-gray-600 mb-6">Enter your name to continue</p>
-
-    <form id="loginForm" class="space-y-5">
+<body class="bg-gradient-to-b from-blue-50 to-white min-h-screen flex items-center justify-center">
+  <div class="bg-white shadow-2xl rounded-2xl p-10 w-full max-w-md">
+    <h2 class="text-3xl font-bold text-center text-blue-600 mb-6">Welcome Back</h2>
+    <p class="text-center text-sm text-gray-600 mb-4">Enter your name to continue</p>
+    <form id="loginForm" class="space-y-4">
       <div>
-        <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
-        <input
-          id="name"
-          type="text"
-          placeholder="Aditya Kumawat"
-          required
-          class="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        <label class="block text-xs font-semibold mb-1" for="name">Full Name</label>
+        <input id="name" type="text" placeholder="Aditya Kumawat" class="w-full border border-gray-300 rounded px-4 py-2" required />
       </div>
-
-      <div class="flex gap-4">
+      <div class="flex gap-3">
         <div class="flex-1">
-          <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-          <input
-            id="email"
-            type="email"
-            placeholder="you@example.com"
-            required
-            class="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <label class="block text-xs font-semibold mb-1" for="email">Email</label>
+          <input id="email" type="email" placeholder="you@example.com" class="w-full border border-gray-300 rounded px-4 py-2" required />
         </div>
         <div class="flex-1">
-          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-          <input
-            id="password"
-            type="password"
-            placeholder="••••••••"
-            required
-            class="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <label class="block text-xs font-semibold mb-1" for="password">Password</label>
+          <input id="password" type="password" placeholder="••••••••" class="w-full border border-gray-300 rounded px-4 py-2" required />
         </div>
       </div>
-
-      <button
-        type="submit"
-        class="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition duration-300"
-      >
-        Login
-      </button>
+      <button class="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:shadow-lg transition">Login</button>
     </form>
-
-    <p class="text-center text-gray-500 text-xs mt-5">
-      This is a dummy login; authentication is stored only in localStorage.
-    </p>
+    <p class="text-center text-gray-500 text-xs mt-4">This is a dummy login; no authentication is stored securely.</p>
   </div>
 
   <script>
-    document.getElementById("loginForm").addEventListener("submit", (e) => {
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
 
       if (!name || !email || !password) {
-        return alert("Please fill all the fields.");
+        alert("Please fill in all fields.");
+        return;
       }
 
-      localStorage.setItem("loggedInUser", name);
-      alert(`Welcome, ${name}! Redirecting to your dashboard...`);
-      window.location.href = "dashboard.html";
+      try {
+        const response = await fetch("http://localhost:5000/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, email, password }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          localStorage.setItem("loggedInUser", name);
+          window.location.href = "dashboard.html";
+        } else {
+          alert(data.error || "Login failed");
+        }
+      } catch (error) {
+        alert("Error: " + error.message);
+      }
     });
   </script>
 </body>
